@@ -1,0 +1,70 @@
+.parent {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.parent div {
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+
+.loader {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  position: relative;
+}
+.loader::after,
+.loader::before {
+  content: "";
+  box-sizing: border-box;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  opacity: 0;
+  background: blue;
+  position: absolute;
+  left: -50%;
+  top: -50%;
+  animation: animloader 1.8s ease-in-out infinite;
+}
+.loader::after {
+  animation-delay: 0.9s;
+}
+
+@keyframes animloader {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  opacity: 0;
+  background-color: rgba(0, 0, 255, 0.188);
+  color: black;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+  width: max-content;
+  position: absolute;
+  z-index: 1;
+  transition: 0.2s linear;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
