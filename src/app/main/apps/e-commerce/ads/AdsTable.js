@@ -64,7 +64,7 @@ function AdsTable(props) {
           handleClose();
           try{
           
-            axios.patch('https://apis.datcarts.com/ads/'+id,data).then((res)=>{
+            axios.patch(process.env.REACT_APP_PRODUCTION_KEY+'/ads/'+id,data).then((res)=>{
              
               props.getAds(undefined, undefined, true)
              
@@ -158,7 +158,7 @@ function AdsTable(props) {
 
   const handleDelete=(e,id) => {
    
-    axios.delete('https://apis.datcarts.com/ads/'+id).then((res)=>{
+    axios.delete(process.env.REACT_APP_PRODUCTION_KEY+'/ads/'+id).then((res)=>{
    
       props.getAds(undefined, undefined, true)
     }).catch((err)=>{
@@ -183,7 +183,7 @@ function AdsTable(props) {
 
     // Call your API for search results here
     if (value) {
-        axios.post('https://apis.datcarts.com/ads/searchAds',{
+        axios.post(process.env.REACT_APP_PRODUCTION_KEY+'/ads/searchAds',{
           queryDto: { "query":value },
             storeId,
         }).then((res)=>{

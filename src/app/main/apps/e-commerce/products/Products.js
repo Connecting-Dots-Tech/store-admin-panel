@@ -21,7 +21,7 @@ function Products() {
   const getProducts = async (page = 1, limit = 10, flag = false) => {
     try {
       const response = await axios.get(
-          "https://apis.datcarts.com/products/getProducts/" +
+        process.env.REACT_APP_PRODUCTION_KEY+"/products/getProducts/" +
           storeId,
         {
           params: {

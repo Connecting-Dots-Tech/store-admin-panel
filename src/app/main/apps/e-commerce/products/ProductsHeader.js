@@ -32,7 +32,7 @@ const handleClose =() => {
       if(!upd){
  
         handleClose();
-        axios.post('https://apis.datcarts.com/products',data).then((res)=>{
+        axios.post(process.env.REACT_APP_PRODUCTION_KEY+'/products',data).then((res)=>{
         
           props.getProducts(undefined, undefined, true)
         }).catch((err)=>{

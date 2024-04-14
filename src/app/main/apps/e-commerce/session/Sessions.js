@@ -23,7 +23,7 @@ function Sessions() {
 
     try {
       const response = await axios.get(
-          "https://apis.datcarts.com/auth/getsession/device/" +
+        process.env.REACT_APP_PRODUCTION_KEY+"/auth/getsession/device/" +
           deviceId+"/"+status,
         {
           params: {

@@ -21,7 +21,7 @@ function Devices() {
   const getdevice = async (page = 1, limit = 10, flag = false) => {
     try {
       const response = await axios.get(
-          "https://apis.datcarts.com/device/getdevice/" +
+        process.env.REACT_APP_PRODUCTION_KEY+"/device/getdevice/" +
           storeId,
         {
           params: {

@@ -22,21 +22,21 @@ function Carts() {
   const getCarts = async (status='active',page = 1, limit = 10, flag = false) => {
 
     try {
-      // const response = await axios.post(
-      //   "https://apis.datcarts.com/cart/getAllStoreCarts/"+page+"/"+limit,
-      //   {
-      //     storeId
-      //   }
-      // );
-
-
-
       const response = await axios.post(
-        "http://localhost:4000/cart/getAllStoreCarts/"+page+"/"+limit,
+        process.env.REACT_APP_PRODUCTION_KEY+"/cart/getAllStoreCarts/"+page+"/"+limit,
         {
           storeId
         }
       );
+
+
+
+      // const response = await axios.post(
+      //   "http://localhost:4000/cart/getAllStoreCarts/"+page+"/"+limit,
+      //   {
+      //     storeId
+      //   }
+      // );
 
       const datas = await response.data.data;
 console.log(datas)

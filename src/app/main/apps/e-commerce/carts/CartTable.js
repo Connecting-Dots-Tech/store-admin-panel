@@ -111,7 +111,7 @@ function CartTable(props) {
  
   const handleDelete=(e,id) => {
   
-    axios.delete('https://apis.datcarts.com/device/'+id).then((res)=>{
+    axios.delete(process.env.REACT_APP_PRODUCTION_KEY+'/device/'+id).then((res)=>{
      
       props.getDevices(undefined, undefined, true)
     }).catch((err)=>{
@@ -136,8 +136,8 @@ function CartTable(props) {
     // Call your API for search results here
     if (value) {
         
-          // axios.post('https://apis.datcarts.com/device/searchDevice',{
-            axios.post('http://localhost:4000/cart/searchActiveCarts',{
+           axios.post(process.env.REACT_APP_PRODUCTION_KEY+'/device/searchDevice',{
+           // axios.post('http://localhost:4000/cart/searchActiveCarts',{
 
             queryDto: { "query":value },
             storeId,

@@ -21,7 +21,7 @@ const { storeId } = routeParams;
   const getLogs =async (page=1, limit=10,flag=false)=> {
     try{
 
-      const response = await axios.get('https://apis.datcarts.com/beacon/getLogsByStore/'+storeId,{
+      const response = await axios.get(process.env.REACT_APP_PRODUCTION_KEY+'/beacon/getLogsByStore/'+storeId,{
         params: {
         page,
         limit,

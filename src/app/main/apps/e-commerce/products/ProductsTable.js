@@ -62,7 +62,7 @@ function ProductsTable(props) {
           handleClose();
           try{
     
-            axios.patch('https://apis.datcarts.com/products/'+id,data).then((res)=>{
+            axios.patch(process.env.REACT_APP_PRODUCTION_KEY+'/products/'+id,data).then((res)=>{
              
               props.getProducts(undefined, undefined, true)
            
@@ -186,7 +186,7 @@ function ProductsTable(props) {
   // }
   const handleDelete=(e,id) => {
   
-    axios.delete('https://apis.datcarts.com/products/'+id).then((res)=>{
+    axios.delete(process.env.REACT_APP_PRODUCTION_KEY+'/products/'+id).then((res)=>{
      
       props.getProducts(undefined, undefined, true)
     }).catch((err)=>{
@@ -211,7 +211,7 @@ function ProductsTable(props) {
     // Call your API for search results here
     if (value) {
          // axios.get(process.env.REACT_APP_PRODUCTION_KEY+'/store/search-store?query='+value).then((res)=>{
-          axios.post('https://apis.datcarts.com/products/search-products-by-store',{
+          axios.post(process.env.REACT_APP_PRODUCTION_KEY+'/products/search-products-by-store',{
             queryDto: { "query":value },
             storeId,
           }).then((res)=>{

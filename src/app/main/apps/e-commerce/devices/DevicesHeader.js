@@ -36,7 +36,7 @@ const handleClose =() => {
       if(!upd){
  
         handleClose();
-        axios.post('https://apis.datcarts.com/device',data).then((res)=>{
+        axios.post(process.env.REACT_APP_PRODUCTION_KEY+'/device',data).then((res)=>{
           toast.success("Success Device Added!")
           props.getDevices(undefined, undefined, true)
         }).catch((err)=>{

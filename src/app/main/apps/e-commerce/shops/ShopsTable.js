@@ -65,7 +65,7 @@ function ShopsTable(props) {
           handleClose();
           try{
             
-            axios.patch('https://apis.datcarts.com/store/'+id,data).then((res)=>{
+            axios.patch(process.env.REACT_APP_PRODUCTION_KEY+'/store/'+id,data).then((res)=>{
              
               props.getShop(undefined, undefined, true)
              
@@ -163,7 +163,7 @@ function ShopsTable(props) {
 
   const handleDelete=(e,id) => {
    
-    axios.delete('https://apis.datcarts.com/store/'+id).then((res)=>{
+    axios.delete(process.env.REACT_APP_PRODUCTION_KEY+'/store/'+id).then((res)=>{
    
       props.getShop(undefined, undefined, true)
     }).catch((err)=>{
@@ -188,7 +188,7 @@ function ShopsTable(props) {
     // Call your API for search results here
     if (value) {
       
-        axios.get('https://apis.datcarts.com/store/search-store?query='+value).then((res)=>{
+        axios.get(process.env.REACT_APP_PRODUCTION_KEY+'/store/search-store?query='+value).then((res)=>{
        setSearchResults(res.data)
       }).catch((err)=>{
         setIsSearching(false);

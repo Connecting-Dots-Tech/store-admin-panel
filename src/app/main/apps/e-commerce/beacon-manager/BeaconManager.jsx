@@ -23,7 +23,7 @@ function BeaconManager() {
     };
 
     axios
-      .post("https://apis.datcarts.com/beacon", data)
+      .post(process.env.REACT_APP_PRODUCTION_KEY+"/beacon", data)
       .then((res) => {
         console.log(res);
         alert("Beacon created.")

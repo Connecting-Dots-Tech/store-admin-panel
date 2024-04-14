@@ -14,7 +14,7 @@ function LayoutManager() {
 
   React.useEffect(() => {
     axios
-      .get("https://apis.datcarts.com/layout/" + storeId)
+      .get(process.env.REACT_APP_PRODUCTION_KEY+"/layout/" + storeId)
       .then((res) => {
         const layout = res.data.data.layouts;
         setLayouts(layout);

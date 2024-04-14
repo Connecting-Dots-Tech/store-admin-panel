@@ -142,7 +142,7 @@ export default function AddStoreAds(props) {
    useEffect(() => {
     // Make an API call to fetch the list of layouts and update the layouts state
     // You should replace the placeholder with your actual API call
-    axios.get('https://apis.datcarts.com/layout/'+storeId)
+    axios.get(process.env.REACT_APP_PRODUCTION_KEY+'/layout/'+storeId)
      
       .then((data) => {
         setLayouts(data.data.data.layouts);
@@ -157,7 +157,7 @@ export default function AddStoreAds(props) {
     if (selectedLayout) {
       // Make an API call to fetch the list of region IDs for the selected layout
       // You should replace the placeholder with your actual API call
-      axios.get('https://apis.datcarts.com/layout/getRegionByLayout/'+selectedLayout)
+      axios.get(process.env.REACT_APP_PRODUCTION_KEY+'/layout/getRegionByLayout/'+selectedLayout)
         .then((data) => {
           setRegionIds(data.data.data.regionIds);
         })

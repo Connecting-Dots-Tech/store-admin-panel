@@ -95,7 +95,7 @@ function TrackingsTable(props) {
  
   const handleDelete=(e,id) => {
   
-    axios.delete('https://apis.datcarts.com/device/'+id).then((res)=>{
+    axios.delete(process.env.REACT_APP_PRODUCTION_KEY+'/device/'+id).then((res)=>{
      
       props.getDevices(undefined, undefined, true)
     }).catch((err)=>{
@@ -120,7 +120,7 @@ function TrackingsTable(props) {
     // Call your API for search results here
     if (value) {
          // axios.get(process.env.REACT_APP_PRODUCTION_KEY+'/store/search-store?query='+value).then((res)=>{
-          axios.post('https://apis.datcarts.com/device/searchDevice',{
+          axios.post(process.env.REACT_APP_PRODUCTION_KEY+'/device/searchDevice',{
             queryDto: { "query":value },
             storeId,
           }).then((res)=>{
