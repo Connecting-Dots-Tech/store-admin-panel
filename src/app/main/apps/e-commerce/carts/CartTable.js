@@ -157,38 +157,13 @@ function CartTable(props) {
   }
 
   return (
-    <div className="w-full flex flex-col">
-          <div style={{ maxWidth: 'md', marginLeft: 0, marginTop: 2, marginBottom: 2 }} className="container mx-auto flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
-
- {/* <Container maxWidth="md"  sx={{ml:0, mt: 2, mb:2 }}> */}
-  {/* <div className="flex flex-col sm:flex-row justify-between"> */}
-        <TextField  type="search" id="search" label="Search"
-         
-          onChange={handleChange}
-        sx={{ width: 600 }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-           />
-
-           
-<motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
-        >
-
-
-        </motion.div>
-        </div>
-
+  
+         <div className="w-full flex flex-col min-h-full">
         <CartProducts products={products} setOpen={setOpen} open={open}/>
       {/* </Container> */}
+      
       <FuseScrollbars className="grow overflow-x-auto">
-        <Table stickyHeader className="min-w-xl" aria-labelledby="tableTitle">
+        <Table stickyHeader className="px-5 min-w-xl" aria-labelledby="tableTitle">
           <CartTableHead
             selectedProductIds={selected}
             order={order}

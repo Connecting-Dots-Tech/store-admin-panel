@@ -25,7 +25,7 @@ function CartHeader(props) {
         delay={300}
         className="text-24 md:text-32 font-extrabold tracking-tight mr-5"
       >
-      {props.status == 'active'? 'Active' : 'Inactive' }  Sessions -
+      {props.status == 'active'? 'Active' : 'Inactive' }  Carts -
       </Typography>
       <Typography
         component={motion.span}
