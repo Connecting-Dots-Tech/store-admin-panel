@@ -1,9 +1,10 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { DataGrid } from '@mui/x-data-grid';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { IconButton, Checkbox } from '@mui/material';
 
 const style = {
   position: 'absolute',
@@ -17,38 +18,83 @@ const style = {
   p: 4,
 };
 
-const columns = [
-  { field: 'image', headerName: 'Image', width: 150, renderCell: (params) => <img src={params.row.image} alt={params.row.name} style={{ maxWidth: '100%', maxHeight: '100%' }} /> },
-  { field: 'barcodeid', headerName: 'Barcode ID', width: 150 },
-  { field: 'qty', headerName: 'Qty', width: 100 },
-  { field: 'price', headerName: 'Price', width: 150, type: 'number' },
-];
 
 export default function CartProducts(props) {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setOpen(false);
-    props.setOpen(false);
-  }
-  React.useEffect(() => {
-    setOpen(props.open)
-  }, [props.open]);
+  const { open, setOpen, products } = props;
+  const [selectedRows, setSelectedRows] = React.useState([]);
+
+
+const handleClose = () => {
+setOpen(false);
+}
+  
+const columns = [
+  {
+    field: 'checkbox',
+    headerName: '',
+    width: 50,
+    renderCell: (params) => (
+      <Checkbox
+        checked={params.row.isChecked}
+        onChange={(event) => handleCheckboxChange(event, params.row.id)}
+      />
+    ),
+  },
+  {
+    field: 'image',
+    headerName: 'Image',
+    width: 150,
+    renderCell: (params) => (
+      <img src={params.row.image} alt={params.row.name} style={{ maxWidth: '100%', maxHeight: '100%' }} />
+    ),
+  },
+  { field: 'barcodeid', headerName: 'Barcode ID', width: 150 },
+  { field: 'qty', headerName: 'Qty', width: 50 },
+  { field: 'price', headerName: 'Price', width: 150, type: 'number' },
+  {
+    field: 'action',
+    headerName: 'Action',
+    width: 150,
+    renderCell: (params) => (
+      <IconButton onClick={() => handleCopyToClipboard(params.row.barcodeid)} style={{ outline: 'none' }}>
+        <ContentCopyIcon />
+      </IconButton>
+    ),
+  },
+];
+
+  const handleCheckboxChange = (event, id) => {
+    if (event.target.checked) {
+      setSelectedRows((prevSelected) => [...prevSelected, id]);
+    } else {
+      setSelectedRows((prevSelected) => prevSelected.filter((item) => item !== id));
+    }
+  };
+
+  const handleCopyToClipboard = (barcodeId) => {
+    navigator.clipboard.writeText(barcodeId)
+      .then(() => {
+        console.log('Copied to clipboard:', barcodeId);
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+      });
+  };
 
   const rows = React.useMemo(() => {
-    // Create rows using the products prop
-    return props.products.map((product) => ({
+    // Check if products and products.products are defined before mapping
+    return products?.products?.map((product) => ({
       id: product.productId._id, // Assuming each product has a unique ID
       image: product.productId.productImage,
       barcodeid: product.productId.barcodeId,
       qty: product.quantity,
-      price: product.productId.price,
-    }));
-  }, [props.products]);
-
+      price: product.productId.price*product.quantity,
+      isChecked: selectedRows.includes(product.productId._id),
+    })) || []; // Return an empty array if products or products.products is not defined
+  }, [products, selectedRows]);
+  
   return (
     <div>
-      {/* <Button onClick={handleOpen}>Open modal</Button> */}
       <Modal
         open={open}
         onClose={handleClose}

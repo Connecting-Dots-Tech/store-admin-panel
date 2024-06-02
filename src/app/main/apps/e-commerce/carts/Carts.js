@@ -59,6 +59,11 @@ console.log(datas)
 
   useEffect(() => {
     getCarts();
+   
+    const intervalId = setInterval(() => getCarts(undefined, 1, 10, true), 5000);
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
  const updateStatus=(status) => {
