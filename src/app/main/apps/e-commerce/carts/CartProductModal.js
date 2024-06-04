@@ -22,8 +22,7 @@ const style = {
 export default function CartProducts(props) {
   const { open, setOpen, products } = props;
   const [selectedRows, setSelectedRows] = React.useState([]);
-
-
+  const [partialSelectedRows, setPartialSelectedRows] = React.useState(new Set());
 const handleClose = () => {
 setOpen(false);
 }
@@ -33,12 +32,14 @@ const columns = [
     field: 'checkbox',
     headerName: '',
     width: 50,
-    renderCell: (params) => (
+    renderCell: (params) =>(
       <Checkbox
-        checked={params.row.isChecked}
-        onChange={(event) => handleCheckboxChange(event, params.row.id)}
-      />
-    ),
+      checked={selectedRows.includes(params.row.id)}
+      indeterminate={partialSelectedRows.has(params.row.id)}
+      onChange={(event) => handleCheckboxChange(event, params.row.id)}
+    />
+    )
+  ,
   },
   {
     field: 'image',
@@ -63,13 +64,28 @@ const columns = [
   },
 ];
 
-  const handleCheckboxChange = (event, id) => {
-    if (event.target.checked) {
+const handleCheckboxChange = (event, id) => {
+  if (event.target.checked) {
+    if (partialSelectedRows.has(id)) {
+   
+      setPartialSelectedRows((prevSet) => {
+        const newSet = new Set(prevSet); 
+        newSet.delete(id); 
+        return newSet;
+      });
       setSelectedRows((prevSelected) => [...prevSelected, id]);
     } else {
-      setSelectedRows((prevSelected) => prevSelected.filter((item) => item !== id));
+      
+      setPartialSelectedRows((prevSet) => new Set(prevSet.add(id)));
     }
-  };
+  } else {
+   
+    setSelectedRows((prevSelected) => prevSelected.filter((item) => item !== id));
+   
+  }
+};
+
+
 
   const handleCopyToClipboard = (barcodeId) => {
     navigator.clipboard.writeText(barcodeId)
@@ -82,15 +98,20 @@ const columns = [
   };
 
   const rows = React.useMemo(() => {
-    // Check if products and products.products are defined before mapping
+ 
+    if (!products?.products) {
+      return []; 
+    }
+
     return products?.products?.map((product) => ({
-      id: product.productId._id, // Assuming each product has a unique ID
+      id: product.productId._id, 
       image: product.productId.productImage,
       barcodeid: product.productId.barcodeId,
       qty: product.quantity,
       price: product.productId.price*product.quantity,
       isChecked: selectedRows.includes(product.productId._id),
-    })) || []; // Return an empty array if products or products.products is not defined
+      isPartialChecked: partialSelectedRows.has(product.productId._id),
+    })) || []; 
   }, [products, selectedRows]);
   
   return (
