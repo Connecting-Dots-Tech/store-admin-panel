@@ -17,7 +17,8 @@ function Devices() {
   const [total, setTotalCount] = useState(0);
   const [storeName, setstoreName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const { storeId } = routeParams;
+  
+  const storeId  =  localStorage.getItem('storeId');
   const getdevice = async (page = 1, limit = 10, flag = false) => {
     try {
       const response = await axios.get(

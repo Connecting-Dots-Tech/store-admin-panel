@@ -6,26 +6,24 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import clsx from 'clsx';
-import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-
+import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import withRouter from '@fuse/core/withRouter';
-import FuseLoading from '@fuse/core/FuseLoading';
-import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import { getShops, selectShops, selectShopsSearchText } from '../store/shopsSlice';
-import { getProducts, selectProducts, selectProductsSearchText } from '../store/productsSlice';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import SimpleSnackbar from '../../../components/Snackbar'
 import ShopsTableHead from './AdsTableHead';
 import FadeMenu from '../../../components/FadeMenu'
 import AddStoreAds from './AddStoreAds';
-import { Chip } from '@mui/material';
+import { Box, Chip, Grid, Typography } from '@mui/material';
 import { Container, TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
 function AdsTable(props) {
   // const dispatch = useDispatch();
@@ -42,12 +40,40 @@ function AdsTable(props) {
     direction: 'asc',
     id: null,
   });
-
+  const [openImageDialog, setOpenImageDialog] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
+  
+  const [filter, setFilter] = useState('');
 
   const [dialog, setDialog] = useState("");
   const [snackbar,setSnackbar] = useState();
   const [open,setOpen] = useState(false);
     
+  const handleFilterChange = (event) => {
+    const selectedFilter = event.target.value;
+    setFilter(selectedFilter);
+  
+    // Filter the data based on the selected adType
+    if (selectedFilter) {
+      const filteredData = props.data.filter(ad => ad.adType === selectedFilter);
+      setData(filteredData);
+    } else {
+      setData(props.data);
+    }
+  };
+  
+  
+  const handleImageClick = (data) => {
+    setSelectedData(data);
+    setOpenImageDialog(true);
+};
+
+const handleCloseImageDialog = () => {
+    setOpenImageDialog(false);
+    setSelectedData(null);
+};
+
+
   const handleClose =() => {
     setDialog()
     setOpen(false)
@@ -65,7 +91,9 @@ function AdsTable(props) {
           try{
           
             axios.patch(process.env.REACT_APP_PRODUCTION_KEY+'/ads/'+id,data).then((res)=>{
-             
+              setPage(0)
+            setRowsPerPage(10);
+               setMaxPage(0);
               props.getAds(undefined, undefined, true)
              
             }).catch((err)=>{
@@ -161,7 +189,9 @@ function AdsTable(props) {
     axios.delete(process.env.REACT_APP_PRODUCTION_KEY+'/ads/'+id).then((res)=>{
    
       props.getAds(undefined, undefined, true)
+      toast.success("Ad deleted")
     }).catch((err)=>{
+      toast.error(err.response.data.message)
       console.log(err);
     })
   
@@ -193,11 +223,7 @@ function AdsTable(props) {
         setIsSearching(false);
         console.log(err);
       })
-      // Perform your API call and update searchResults state
-      // Example: 
-      // fetch(`/api/search?query=${value}`)
-      //   .then((response) => response.json())
-      //   .then((data) => setSearchResults(data));
+    
     } else {
       // Clear searchResults when the search term is empty
       setSearchResults([]);
@@ -221,13 +247,27 @@ function AdsTable(props) {
             ),
           }}
            />
+
+
+{/* <FormControl sx={{ minWidth: 120 }}>
+    <InputLabel id="filter-label">Filter</InputLabel>
+    <Select
+      labelId="filter-label"
+      id="filter"
+      value={filter}
+      label="Filter"
+      onChange={handleFilterChange}
+    >
+      <MenuItem value=""><em>None</em></MenuItem>
+      <MenuItem value="carousel">Carousel</MenuItem>
+      <MenuItem value="grid">Grid</MenuItem>
+      <MenuItem value="popup">Popup</MenuItem>
+    </Select>
+  </FormControl> */}
       </Container>
 
 
       {dialog}
-
-     {/* {snackbar} */}
-
 
 
 
@@ -281,25 +321,43 @@ function AdsTable(props) {
 
                     <TableCell
                     pl={2}
-                      className="w-52 px-4 md:px-0"
+                      className="w-85 px-4 md:px-0"
                       style={{paddingLeft:"10px"}}
                       component="th"
                       scope="row"
                       padding="none"
-                      onClick={(event) => handleClick(n)}
+                    //  onClick={(event) => handleClick(n)}
+                    onClick={() => handleImageClick(n)}
                     >
-                      {n.logo > 0  ? (
-                        // <img
-                        //   className="w-full block rounded"
-                        //   src={_.find(n.logo, { id: n.featuredImageId }).url}
-                        //   alt={n.name}
-                        // />
+                      {!n.imageUrl   ? (  
+                        n.popupUrl?
+                        (
+                          <img
+                          className="w-full block rounded ml-10"
+                          src={n.popupUrl}
+                          alt={n.title}
+                          style={{
+                            maxWidth: "150px",   
+                            maxHeight: "150px",  
+                            width: "auto",       
+                            height: "auto",    
+                            objectFit: "contain" 
+                        }}
+                        />
+                        ) :
                       <h1>image</h1>
                       ) : (
                         <img
                           className="w-full block rounded ml-10"
                           src={n.imageUrl}
                           alt={n.title}
+                          style={{
+                            maxWidth: "150px",   
+                            maxHeight: "150px",  
+                            width: "auto",       
+                            height: "auto",    
+                            objectFit: "contain" 
+                        }}
                         />
                       )}
                     </TableCell>
@@ -316,16 +374,30 @@ function AdsTable(props) {
                       {n.adType}
                     </TableCell>
 
-                    <TableCell className="p-4 md:p-16" component="th" scope="row" align="right"   onClick={(event) => handleClick(n)}>
-                  {
-                    n.tags.map((tag)=>{
-                      return(
-                        <Chip label={tag} className="mr-4" />
-                      )
-                    }
-                    )
-                  }
+                    <TableCell className="p-4 md:p-16 truncate" component="th" scope="row" align='left'
+                      onClick={(event) => handleClick(n)}
+                      >
+                    
+{
+  n.regionId && n.regionId.length > 0 &&
+  (
+  n.regionId.map((res,index)=>(
+    res ? ( 
+      <Chip
+        key={index}
+        label={res}
+        style={{ margin: '0.5rem' }}
+      />
+    ) : null
+                         ))
+                        )
+}
                      
+                      </TableCell>
+
+                  
+                      <TableCell className="p-4 md:p-16" component="th" scope="row" align="left">
+                    {n.status}
                     </TableCell>
 
                     <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
@@ -354,6 +426,113 @@ function AdsTable(props) {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+
+
+
+
+    <Dialog
+      open={openImageDialog}
+      onClose={handleCloseImageDialog}
+      maxWidth="md"
+      fullWidth
+    >
+      <DialogTitle
+        sx={{
+          position: 'relative',
+          paddingBottom: '16px', // Add padding for spacing
+        }}
+      >
+        AD DETAILS
+        <IconButton
+          aria-label="close"
+          onClick={handleCloseImageDialog}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent>
+        {selectedData && (
+          <Box>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                mb: 2, // Margin bottom
+              }}
+            >
+              <img
+                src={selectedData.imageUrl}
+                alt="Full-size"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: '8px', // Rounded corners
+                }}
+              />
+            </Box>
+
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" gutterBottom>
+                  Title:
+                </Typography>
+                <Typography variant="body1">{selectedData.title}</Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" gutterBottom>
+                  Ad Type:
+                </Typography>
+                <Typography variant="body1">{selectedData.adType}</Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" gutterBottom>
+                  Category:
+                </Typography>
+                <Typography variant="body1">{selectedData.category}</Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" gutterBottom>
+                  Valid From:
+                </Typography>
+                <Typography variant="body1">{selectedData.validFrom}</Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" gutterBottom>
+                  Valid To:
+                </Typography>
+                <Typography variant="body1">{selectedData.validTo}</Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" gutterBottom>
+                  Type:
+                </Typography>
+                <Typography variant="body1">{selectedData.type}</Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" gutterBottom>
+                  Terms:
+                </Typography>
+                <Typography variant="body1">{selectedData.terms}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom>
+                  Description:
+                </Typography>
+                <Typography variant="body1">{selectedData.description}</Typography>
+              </Grid>
+            </Grid>
+          </Box>
+        )}
+      </DialogContent>
+    </Dialog>
+
+
     </div>
   );
 }

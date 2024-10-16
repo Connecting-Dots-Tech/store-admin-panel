@@ -2,8 +2,8 @@ import FusePageCarded from "@fuse/core/FusePageCarded";
 import withReducer from "app/store/withReducer";
 import useThemeMediaQuery from "@fuse/hooks/useThemeMediaQuery";
 import reducer from "../store";
-import SessionHeader from "./SessionsHeader";
-import SessionTable from "./SessionsTable";
+import SessionsHeader from "./SessionsHeader";
+import SessionsTable from "./SessionsTable";
 import axios from "axios";
 import Typography from "@mui/material/Typography";
 import { motion } from "framer-motion";
@@ -18,12 +18,13 @@ function Sessions() {
   const [storeName, setstoreName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const { deviceId } = routeParams;
-const storeId  =  localStorage.getItem('storeId');
+
+  const storeId  =  localStorage.getItem('storeId');
   
-  const getdevice = async (page = 1, limit = 10, flag = false) => {
+  const getdevice = async ( page = 1, limit = 10, flag = false) => {
     try {
         const response = await axios.get(
-            `${process.env.REACT_APP_PRODUCTION_KEY}/auth/getsession/device/${deviceId}/active`,
+            `${process.env.REACT_APP_PRODUCTION_KEY}/auth/getsession/device/${deviceId}/inactive`,
             {
                 params: {
                     page,
@@ -59,7 +60,7 @@ const storeId  =  localStorage.getItem('storeId');
       <FusePageCarded
         className='px-20 pb-20'
         header={
-          <SessionHeader   getDevices={getdevice} deviceId={deviceId} storeId={storeId} storeName={storeName} />
+          <SessionsHeader  getDevices={getdevice} deviceId={deviceId} storeId={storeId} storeName={storeName} />
         }
         content={
           data.length === 0 ? (
@@ -71,7 +72,7 @@ const storeId  =  localStorage.getItem('storeId');
                   className="flex flex-1 items-center justify-center h-full"
                 >
                   <Typography color="text.secondary" variant="h5" className="mt-32">
-                    There are no Active Session in this Device!
+                    There are no Inactive Session in this Device!
                     
                   </Typography>
                  
@@ -83,7 +84,7 @@ const storeId  =  localStorage.getItem('storeId');
               )}
             </div>
           ) : (
-            <SessionTable
+            <SessionsTable
             getDevices={getdevice}
               total={total}
               storeName={storeName}

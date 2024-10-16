@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import FuseLoading from "@fuse/core/FuseLoading";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+
 function Trackings() {
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down("lg"));
   const routeParams = useParams();
@@ -17,11 +18,13 @@ function Trackings() {
   const [total, setTotalCount] = useState(0);
   const [storeName, setstoreName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const { deviceId,storeId } = routeParams;
-  const getdevice = async (page = 1, limit = 10, flag = false) => {
+  const { sessionId } = routeParams;
+  const storeId  =  localStorage.getItem('storeId');
+  
+  const getTracking = async (page = 1, limit = 10, flag = false) => {
     try {
       const response = await axios.get(
-        process.env.REACT_APP_PRODUCTION_KEY+"/tracked-videos/get-video-by-device/" +deviceId+"/"+
+        process.env.REACT_APP_PRODUCTION_KEY+"/tracked-videos/get-video-by-session/" +sessionId+"/"+
           storeId,
         {
           params: {
@@ -32,9 +35,7 @@ function Trackings() {
       );
 
       const datas = await response.data.data;
-console.log(datas)
-     
- console.log(datas.videoData)
+
       setTotalCount(datas.totalData);
 
       if (flag == true) {
@@ -45,12 +46,12 @@ console.log(datas)
     } catch (err) {
       console.log(err);
     } finally {
-      setIsLoading(false); // Update loading state when fetching is completed
+      setIsLoading(false); 
     }
   };
 
   useEffect(() => {
-    getdevice();
+    getTracking();
   }, []);
 
   return (
@@ -58,7 +59,7 @@ console.log(datas)
       <FusePageCarded
         className='px-20 pb-20'
         header={
-          <TrackingsHeader getDevices={getdevice} storeName={storeName} />
+          <TrackingsHeader total={total} getDevices={getTracking} storeName={storeName} />
         }
         content={
           data.length === 0 ? (
@@ -70,7 +71,7 @@ console.log(datas)
                   className="flex flex-1 items-center justify-center h-full"
                 >
                   <Typography color="text.secondary" variant="h5" className="mt-32">
-                    There are no Trackings in this Device!
+                    There are no Trackings in this Session!
                   </Typography>
                 </motion.div>
               ) : (
@@ -81,7 +82,7 @@ console.log(datas)
             </div>
           ) : (
             <TrackingsTable
-            getDevices={getdevice}
+            getTracking={getTracking}
               total={total}
               storeName={storeName}
               storeId={storeId}

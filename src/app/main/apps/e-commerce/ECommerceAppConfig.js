@@ -14,6 +14,7 @@ const BeaconManager = lazy(() => import('./beacon-manager/BeaconManager'));
 const ProductTracking = lazy(() => import('./product-tracking/ProductTracking'));
 const Devices = lazy(() => import('./devices/Devices'));
 const Sessions = lazy(() => import('./session/Sessions'));
+const InactiveSession = lazy(() => import('./inactive-session/Sessions'));
 const Carts = lazy(() => import('./carts/Carts'));
 const ECommerceAppConfig = {
   settings: {
@@ -25,10 +26,10 @@ const ECommerceAppConfig = {
     //   element: <Shops />,
     // },
     
-    // {
-    //   path: 'apps/e-commerce/ads/:storeId',
-    //   element: <Ads />,
-    // },
+    {
+      path: 'apps/e-commerce/ads',
+      element: <Ads />,
+    },
     // {
     //   path: 'apps/e-commerce/beaconlogs/:storeId',
     //   element: <BeaconLogs />,
@@ -37,13 +38,17 @@ const ECommerceAppConfig = {
     //   path: 'apps/e-commerce/layoutlogs/:storeId',
     //   element: <LayoutLogs />,
     // },
-    // {
-    //   path: 'apps/e-commerce/devices/:storeId',
-    //   element: <Devices />,
-    // },
     {
-      path: 'apps/e-commerce/sessions/:deviceId/:storeId',
+      path: 'apps/e-commerce/devices',
+      element: <Devices />,
+    },
+    {
+      path: 'apps/e-commerce/sessions/:deviceId',
       element: <Sessions />,
+    },
+    {
+      path: 'apps/e-commerce/inactivesessions/:deviceId',
+      element: <InactiveSession />,
     },
     {
       path: 'apps/e-commerce/products',
@@ -53,10 +58,10 @@ const ECommerceAppConfig = {
       path: 'apps/e-commerce/carts',
       element: <Carts />,
     },
-    // {
-    //   path: 'apps/e-commerce/trackings/:deviceId/:storeId',
-    //   element: <Trackings />,
-    // },
+    {
+      path: 'apps/e-commerce/trackings/:sessionId/:deviceId/:status',
+      element: <Trackings />,
+    },
    
     {
       path: 'apps/e-commerce',

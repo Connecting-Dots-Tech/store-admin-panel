@@ -17,7 +17,7 @@ function Products() {
   const [total, setTotalCount] = useState(0);
   const [storeName, setstoreName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const storeId  =  localStorage.getItem('storeId');;
+  const storeId  =  localStorage.getItem('storeId');
   const getProducts = async (page = 1, limit = 10, flag = false) => {
     try {
       const response = await axios.get(

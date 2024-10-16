@@ -19,45 +19,55 @@ import { removeProducts } from '../store/productsSlice';
 
 const rows = [
 
-  // address,hpn,cut,dist,state
+
+
+
   {
-    id: 'name',
+    id: 'email',
     align: 'left',
     disablePadding: false,
-    label: 'Title',
+    label: 'email/phone',
     sort: true,
   },
   {
-    id: 'categories',
+    id: 'state',
     align: 'left',
     disablePadding: false,
-    label: 'Ad Type',
+    label: 'state',
     sort: true,
   },
+  // {
+  //   id: 'BillDetails',
+  //   align: 'right',
+  //   disablePadding: false,
+  //   label: 'BillDetails',
+  //   sort: true,
+  // },
   {
-    id: 'RegionID',
-    align: 'left',
-    disablePadding: false,
-    label: 'RegionID',
-    sort: true,
-  },
-  {
-    id: 'Status',
-    align: 'left',
-    disablePadding: false,
-    label: 'Status',
-    sort: true,
-  },
-  {
-    id: 'active',
+    id: 'verificationStatus',
     align: 'right',
     disablePadding: false,
-    label: 'Actions',
+    label: 'verificationStatus',
+    sort: true,
+  },
+  {
+    id: 'videoCount',
+    align: 'right',
+    disablePadding: false,
+    label: 'videoCount',
+    sort: true,
+  },
+
+  {
+    id: 'loginDate',
+    align: 'center',
+    disablePadding: false,
+    label: 'loginDate',
     sort: true,
   },
 ];
 
-function AdsTableHead(props) {
+function DevicesTableHead(props) {
   const { selectedProductIds } = props;
   const numSelected = selectedProductIds.length;
 
@@ -80,56 +90,7 @@ function AdsTableHead(props) {
   return (
     <TableHead>
       <TableRow className="h-48 sm:h-64">
-        <TableCell
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? lighten(theme.palette.background.default, 0.4)
-                : lighten(theme.palette.background.default, 0.02),
-          }}
-          padding="none"
-          className="w-40 md:w-64 text-center z-99"
-        >
-          
-          {numSelected > 0 && (
-            <Box
-              className="flex items-center justify-center absolute w-64 top-0 ltr:left-0 rtl:right-0 mx-56 h-64 z-10 border-b-1"
-              sx={{
-                background: (theme) => theme.palette.background.default,
-              }}
-            >
-              <IconButton
-                aria-owns={selectedProductsMenu ? 'selectedProductsMenu' : null}
-                aria-haspopup="true"
-                onClick={openSelectedProductsMenu}
-                size="large"
-              >
-                <FuseSvgIcon>heroicons-outline:dots-horizontal</FuseSvgIcon>
-              </IconButton>
-              <Menu
-                id="selectedProductsMenu"
-                anchorEl={selectedProductsMenu}
-                open={Boolean(selectedProductsMenu)}
-                onClose={closeSelectedProductsMenu}
-              >
-                <MenuList>
-                  <MenuItem
-                    onClick={() => {
-                      dispatch(removeProducts(selectedProductIds));
-                      props.onMenuItemClick();
-                      closeSelectedProductsMenu();
-                    }}
-                  >
-                    <ListItemIcon className="min-w-40">
-                      <FuseSvgIcon>heroicons-outline:trash</FuseSvgIcon>
-                    </ListItemIcon>
-                    <ListItemText primary="Remove" />
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </Box>
-          )}
-        </TableCell>
+       
         {rows.map((row) => {
           return (
             <TableCell
@@ -169,4 +130,4 @@ function AdsTableHead(props) {
   );
 }
 
-export default AdsTableHead;
+export default DevicesTableHead;

@@ -16,11 +16,11 @@ function Ads() {
 const [data,setData]= useState([])
 const [total,setTotalCount]= useState(0)
 const [isLoading, setIsLoading] = useState(true);
-const { storeId } = routeParams;
+const storeId  =  localStorage.getItem('storeId');
 
   const getAds =async (page=1, limit=10,flag=false)=> {
     try{
-
+console.log(storeId)
       const response = await axios.get(process.env.REACT_APP_PRODUCTION_KEY+'/ads/getads/'+storeId,{
         params: {
         page,
@@ -54,7 +54,7 @@ const { storeId } = routeParams;
     <>
       <FusePageCarded
         className='px-20 pb-20'
-        header={<AdsHeader getShop={getAds} storeId={storeId}/>}
+        header={<AdsHeader getAds={getAds} storeId={storeId}/>}
         content={data.length === 0 ? (
           <div>
             {data.length === 0 && !isLoading ? (

@@ -58,13 +58,13 @@ const rows = [
     sort: true,
   },
 
-  {
-    id: 'active',
-    align: 'right',
-    disablePadding: false,
-    label: 'Actions',
-    sort: true,
-  },
+  // {
+  //   id: 'active',
+  //   align: 'right',
+  //   disablePadding: false,
+  //   label: 'Actions',
+  //   sort: true,
+  // },
 ];
 
 function DevicesTableHead(props) {

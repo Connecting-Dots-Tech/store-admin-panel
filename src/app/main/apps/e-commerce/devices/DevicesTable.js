@@ -116,7 +116,7 @@ function DevicesTable(props) {
   }
 
   function handleClick(item) {
-     navigate(`/apps/e-commerce/sessions/${item._id}/${storeId}`);
+     navigate(`/apps/e-commerce/sessions/${item._id}`);
   }
 
 
@@ -273,9 +273,9 @@ function DevicesTable(props) {
 
         
 
-                    <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
+                    {/* <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
                     <FadeMenu delete={(e)=>{handleDelete(e,n._id)}} update={(e)=>{handleAdd(e,true,'EDIT',n)}} />
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 );
               })}

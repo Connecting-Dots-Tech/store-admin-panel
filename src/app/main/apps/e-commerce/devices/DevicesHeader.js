@@ -107,7 +107,7 @@ const handleClose =() => {
           />
         </Paper> */}
 
-<motion.div
+{/* <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
         >
@@ -124,7 +124,7 @@ const handleClose =() => {
           >
             View Layouts
           </Button>
-        </motion.div>
+        </motion.div> */}
 
         <motion.div
           initial={{ opacity: 0, x: 20 }}
@@ -133,7 +133,7 @@ const handleClose =() => {
           <Button
             className=""
           onClick={()=>{
-            navigate('/apps/e-commerce/ads/'+storeId);
+            navigate('/apps/e-commerce/ads');
           }}
             variant="contained"
             style={{ backgroundColor: '#ef5350', color: '#ffffff' }}
@@ -160,7 +160,7 @@ const handleClose =() => {
           </Button>
         </motion.div>
 
-         <motion.div
+         {/* <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
         >
@@ -175,7 +175,7 @@ const handleClose =() => {
           >
             ADD Device
           </Button>
-        </motion.div>
+        </motion.div> */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}

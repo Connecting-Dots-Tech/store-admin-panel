@@ -27,6 +27,20 @@ const navigationConfig = [
             url: 'apps/e-commerce/products',
             end: true,
           },
+          {
+            id: 'e-commerce-store',
+            title: 'Devices',
+            type: 'item',
+            url: 'apps/e-commerce/devices',
+            end: true,
+          },
+          {
+            id: 'e-commerce-store',
+            title: 'Ads',
+            type: 'item',
+            url: 'apps/e-commerce/ads',
+            end: true,
+          },
           // {
           //   id: 'product-tracking',
           //   title: "Product Tracking",

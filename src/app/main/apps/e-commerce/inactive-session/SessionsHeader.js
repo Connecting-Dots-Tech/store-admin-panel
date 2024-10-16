@@ -17,7 +17,7 @@ function SessionsHeader(props) {
       delay={300}
       className="text-24 md:text-32 font-extrabold tracking-tight mr-5"
       >
-      Active Sessions -
+      Inactive Sessions -
     </Typography>
     <Typography
       component={motion.span}
@@ -36,17 +36,16 @@ function SessionsHeader(props) {
       >
         <Button
           onClick={() => {
-            
             navigate(
-              "/apps/e-commerce/inactivesessions/" +
+              "/apps/e-commerce/sessions/" +
                 props.deviceId
             );
           }}
           size="small" 
           variant="contained"
-          style={{ backgroundColor: "#ef5350", color: "#ffffff" }}
+          style={{ backgroundColor: "#5cb85c", color: "#ffffff" }}
         >
-          Show Inactive
+          Show Active
         </Button>
       </motion.div>
   

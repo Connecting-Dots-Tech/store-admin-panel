@@ -1,29 +1,22 @@
 import FuseScrollbars from "@fuse/core/FuseScrollbars";
 import _ from "@lodash";
-import Checkbox from "@mui/material/Checkbox";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import Button from "@mui/material/Button";
 import TableCell from "@mui/material/TableCell";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import CartProducts from "./CartProductModal";
-
+import Pagination from '@mui/material/Pagination';
 import withRouter from "@fuse/core/withRouter";
 
-import { Container, TextField, InputAdornment } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-
-import CartTableHead from "./CartTableHead";
-import FadeMenu from "../../../components/FadeMenu";
-function CartTable(props) {
+import ShopsTableHead from "./SessionsTableHead";
+import { Stack,Box } from "@mui/system";
+function SessionsTable(props) {
   const [selected, setSelected] = useState([]);
-  let storeId = localStorage.getItem("storeId");
+  let storeId = props.storeId;
+  let deviceId = props.deviceId;
   const [data, setData] = useState([]);
-  const [products, setProducts] = useState([]);
   const [page, setPage] = useState(0);
   const [maxPage, setMaxPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -38,27 +31,10 @@ function CartTable(props) {
     setOpen(false);
   };
 
-  const formatDate = (dateTimeString) => {
-    const dateTime = new Date(dateTimeString);
-    // Customize the date format as needed (e.g., MM/DD/YYYY)
-    const formattedDate = `${dateTime.toLocaleDateString()} ${dateTime.toLocaleTimeString()}`;
-    return formattedDate;
-  };
-
   useEffect(() => {
-    console.log(props.data)
     setData(props.data);
   }, [props]);
 
-  useEffect(() => {
-    if (data.length > 0 && products) {
-      const updatedProduct = data.find((item) => item._id === products._id);
-
-      if (updatedProduct) {
-        setProducts(updatedProduct);
-      }
-    }
-  }, [data, products]);
   function handleRequestSort(event, property) {
     const id = property;
     let direction = "desc";
@@ -86,17 +62,21 @@ function CartTable(props) {
   }
 
   function handleClick(item) {
-    setProducts(item);
-    setOpen(true);
+    props.navigate(
+      `/apps/e-commerce/trackings/${item._id}/${deviceId}/inactive`
+    );
   }
 
-  function handleChangePage(event, value) {
-    const newPage = parseInt(value, 10);
-    if (page < newPage && newPage > maxPage) {
+  function handleChangePage(event, newPage) {
+    // Correct the page number logic
+    const pageNumber = newPage + 1;
+
+    // Fetch data for the next page
+    if (newPage >= maxPage) {
       setMaxPage(newPage);
-      props.getDevices(newPage + 1, rowsPerPage);
+      props.getDevices(pageNumber, rowsPerPage);
     }
-    setPage(value);
+    setPage(newPage);
   }
 
   function handleChangeRowsPerPage(event) {
@@ -105,22 +85,12 @@ function CartTable(props) {
     props.getDevices(1, newRowsPerPage);
   }
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-
   return (
-    <div className="w-full flex flex-col min-h-full">
-      <CartProducts products={products} setOpen={setOpen} open={open} />
-      {/* </Container> */}
-
+    <div className="w-full flex flex-col">
+      
       <FuseScrollbars className="grow overflow-x-auto">
-        <Table
-          stickyHeader
-          className="px-5 min-w-xl"
-          aria-labelledby="tableTitle"
-        >
-          <CartTableHead
+        <Table stickyHeader className="min-w-xl" aria-labelledby="tableTitle">
+          <ShopsTableHead
             selectedProductIds={selected}
             order={order}
             onSelectAllClick={handleSelectAllClick}
@@ -131,7 +101,7 @@ function CartTable(props) {
 
           <TableBody>
             {_.orderBy(
-              isSearching ? searchResults : data,
+              data,
               [
                 (o) => {
                   switch (order.id) {
@@ -147,7 +117,7 @@ function CartTable(props) {
               [order.direction]
             )
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((n, index) => {
+              .map((n) => {
                 const isSelected = selected.indexOf(n._id) !== -1;
                 return (
                   <TableRow
@@ -158,9 +128,6 @@ function CartTable(props) {
                     tabIndex={-1}
                     key={n._id}
                     selected={isSelected}
-                    onClick={() => {
-                      handleClick(n);
-                    }}
                   >
                     <TableCell
                       className="p-4 md:p-16"
@@ -168,7 +135,7 @@ function CartTable(props) {
                       scope="row"
                       onClick={(event) => handleClick(n)}
                     >
-                      {index + 1}
+                      {n.userId.mobile ? n.userId.mobile : n.userId.email}
                     </TableCell>
 
                     <TableCell
@@ -177,17 +144,7 @@ function CartTable(props) {
                       scope="row"
                       onClick={(event) => handleClick(n)}
                     >
-                      {n.cartId}
-                    </TableCell>
-
-                    <TableCell
-                      className="p-4 md:p-16 truncate"
-                      component="th"
-                      scope="row"
-                      align="right"
-                      onClick={(event) => handleClick(n)}
-                    >
-                      {n.userId}
+                      {n.state}
                     </TableCell>
 
                     <TableCell
@@ -197,7 +154,7 @@ function CartTable(props) {
                       align="right"
                       onClick={(event) => handleClick(n)}
                     >
-                      {n.totalAmount}
+                      {n.verificationStatus}
                     </TableCell>
 
                     <TableCell
@@ -207,7 +164,7 @@ function CartTable(props) {
                       align="right"
                       onClick={(event) => handleClick(n)}
                     >
-                      {n.status}
+                      {n.videoCount}
                     </TableCell>
 
                     <TableCell
@@ -217,7 +174,7 @@ function CartTable(props) {
                       align="right"
                       onClick={(event) => handleClick(n)}
                     >
-                      {formatDate(n.createdAt)}
+                      {n.loginDate}
                     </TableCell>
                   </TableRow>
                 );
@@ -226,24 +183,75 @@ function CartTable(props) {
         </Table>
       </FuseScrollbars>
 
-      <TablePagination
-        className="shrink-0 border-t-1"
-        component="div"
-        count={props.total}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[10]}
-        page={page}
-        backIconButtonProps={{
-          "aria-label": "Previous Page",
-        }}
-        nextIconButtonProps={{
-          "aria-label": "Next Page",
-        }}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      <Box
+  display="flex"
+  justifyContent="space-between"
+  alignItems="center"
+  flexWrap="wrap"
+  sx={{
+    gap: 1,
+    "@media (min-width: 600px)": {
+      justifyContent: "space-between", 
+    },
+    "@media (max-width: 599px)": {
+      justifyContent: "center", 
+    },
+  }}
+>
+  <Box
+    sx={{
+      flexGrow: 1,
+      display: "flex",
+      justifyContent: {
+        xs: "center", 
+        sm: "flex-start", 
+      },
+      flexBasis: {
+        xs: "100%", 
+        sm: "auto", 
+      },
+    }}
+  >
+    <Pagination
+      count={Math.ceil(props.total / rowsPerPage)}
+      page={page + 1}
+      onChange={(event, value) => handleChangePage(event, value - 1)}
+    />
+  </Box>
+  <Box
+    sx={{
+      flexGrow: 1,
+      display: "flex",
+      justifyContent: {
+        xs: "center", 
+        sm: "flex-end", 
+      },
+      flexBasis: {
+        xs: "100%", 
+        sm: "auto", 
+      },
+    }}
+  >
+    <TablePagination
+      component="div"
+      count={props.total}
+      page={page}
+  onPageChange={handleChangePage}
+      rowsPerPage={rowsPerPage}
+      onRowsPerPageChange={handleChangeRowsPerPage}
+      labelDisplayedRows={() => null} 
+      sx={{
+        '& .MuiTablePagination-actions': {
+          display: 'none',
+        },
+      }}
+    />
+  </Box>
+</Box>
+
+
     </div>
   );
 }
 
-export default withRouter(CartTable);
+export default withRouter(SessionsTable);

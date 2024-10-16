@@ -1,61 +1,46 @@
-import FuseScrollbars from '@fuse/core/FuseScrollbars';
-import _ from '@lodash';
-import Checkbox from '@mui/material/Checkbox';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import Button from '@mui/material/Button';
-import TableCell from '@mui/material/TableCell';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import FuseScrollbars from "@fuse/core/FuseScrollbars";
+import _ from "@lodash";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import Button from "@mui/material/Button";
+import TableCell from "@mui/material/TableCell";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import { useEffect, useState } from "react";
+import Pagination from '@mui/material/Pagination';
+import withRouter from "@fuse/core/withRouter";
 
-
-import withRouter from '@fuse/core/withRouter';
-
-import { Container, TextField, InputAdornment } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-
-import ShopsTableHead from './SessionsTableHead';
-import FadeMenu from '../../../components/FadeMenu'
-function DevicesTable(props) {
-
-
+import ShopsTableHead from "./SessionsTableHead";
+import { Stack,Box } from "@mui/system";
+function SessionsTable(props) {
   const [selected, setSelected] = useState([]);
-  let storeId=props.storeId
+  let storeId = props.storeId;
+  let deviceId = props.deviceId;
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [maxPage, setMaxPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [order, setOrder] = useState({
-    direction: 'asc',
+    direction: "asc",
     id: null,
   });
 
+  const [open, setOpen] = useState(false);
 
-  const [open,setOpen] = useState(false);
-    
-  const handleClose =() => {
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-    setOpen(false)
-  }
-  
- 
   useEffect(() => {
-  
-        setData(props.data)
-      
-     
-
+    setData(props.data);
   }, [props]);
 
   function handleRequestSort(event, property) {
     const id = property;
-    let direction = 'desc';
+    let direction = "desc";
 
-    if (order.id === property && order.direction === 'desc') {
-      direction = 'asc';
+    if (order.id === property && order.direction === "desc") {
+      direction = "asc";
     }
 
     setOrder({
@@ -77,125 +62,32 @@ function DevicesTable(props) {
   }
 
   function handleClick(item) {
-    // props.navigate(`/apps/e-commerce/products/${item.id}/${item.handle}`);
+    props.navigate(
+      `/apps/e-commerce/trackings/${item._id}/${deviceId}/active`
+    );
   }
 
-  function handleChangePage(event, value) {
-    const newPage = parseInt(value, 10)
-    if(page<newPage && newPage > maxPage) {
-      setMaxPage(newPage)
-      props.getDevices(newPage+1,rowsPerPage)
+  function handleChangePage(event, newPage) {
+    // Correct the page number logic
+    const pageNumber = newPage + 1;
+
+    // Fetch data for the next page
+    if (newPage >= maxPage) {
+      setMaxPage(newPage);
+      props.getDevices(pageNumber, rowsPerPage);
     }
-    setPage(value);
+    setPage(newPage);
   }
 
   function handleChangeRowsPerPage(event) {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
-    props.getDevices(1,newRowsPerPage)
-  }
-
- 
-  const handleDelete=(e,id) => {
-  
-    axios.delete(process.env.REACT_APP_PRODUCTION_KEY+'/device/'+id).then((res)=>{
-     
-      props.getDevices(undefined, undefined, true)
-    }).catch((err)=>{
-      console.log(err);
-    })
-  
-  }
-
-
-  
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-
-  const handleChange = (event) => {
-    const value = event.target.value;
-    setSearchTerm(value);
-    
-    // Set isSearching to true if there's a search term, false if it's empty
-    setIsSearching(!!value);
-
-    // Call your API for search results here
-    if (value) {
-         // axios.get(process.env.REACT_APP_PRODUCTION_KEY+'/store/search-store?query='+value).then((res)=>{
-          axios.post(process.env.REACT_APP_PRODUCTION_KEY+'/device/searchDevice',{
-            queryDto: { "query":value },
-            storeId,
-          }).then((res)=>{
-
-         setSearchResults(res.data.data.devices)
-        }).catch((err)=>{
-          setIsSearching(false);
-          console.log(err);
-        })
-       
-    } else {
-      // Clear searchResults when the search term is empty
-      setSearchResults([]);
-      setSearchTerm(false)
-    }
+    props.getDevices(1, newRowsPerPage);
   }
 
   return (
     <div className="w-full flex flex-col">
-          <div style={{ maxWidth: 'md', marginLeft: 0, marginTop: 2, marginBottom: 2 }} className="container mx-auto flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
-
- {/* <Container maxWidth="md"  sx={{ml:0, mt: 2, mb:2 }}> */}
-  {/* <div className="flex flex-col sm:flex-row justify-between"> */}
-        <TextField  type="search" id="search" label="Search"
-         
-          onChange={handleChange}
-        sx={{ width: 600 }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-           />
-
-           
-<motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
-        >
-
-
-{props.status === 'active' ? (
-  <Button
-    onClick={()=>{
-
-    props.updateStatus('inactive')
-      props.getDevices('inactive');
-    }}
-    variant="contained"
-    style={{ backgroundColor: '#ef5350', color: '#ffffff' }}
-  >
-    Inactive
-  </Button>
-) : (
-  <Button
-  onClick={()=>{
-    props.updateStatus('active') 
-    props.getDevices('active');
-  }}
-    variant="contained"
-    style={{ backgroundColor: '#5cb85c', color: '#ffffff' }}
-  >
-    Active
-  </Button>
-)}
-
-
-        </motion.div>
-        </div>
-      {/* </Container> */}
+      
       <FuseScrollbars className="grow overflow-x-auto">
         <Table stickyHeader className="min-w-xl" aria-labelledby="tableTitle">
           <ShopsTableHead
@@ -209,11 +101,11 @@ function DevicesTable(props) {
 
           <TableBody>
             {_.orderBy(
-                isSearching ? searchResults : data,
+              data,
               [
                 (o) => {
                   switch (order.id) {
-                    case 'categories': {
+                    case "categories": {
                       return o.categories[0];
                     }
                     default: {
@@ -236,41 +128,52 @@ function DevicesTable(props) {
                     tabIndex={-1}
                     key={n._id}
                     selected={isSelected}
-                  
                   >
-                
-
-                   
-                    <TableCell className="p-4 md:p-16" component="th" scope="row"
-                    onClick={(event) => handleClick(n)}
+                    <TableCell
+                      className="p-4 md:p-16"
+                      component="th"
+                      scope="row"
+                      onClick={(event) => handleClick(n)}
                     >
                       {n.userId.mobile ? n.userId.mobile : n.userId.email}
                     </TableCell>
 
-                    <TableCell className="p-4 md:p-16" component="th" scope="row"
-                    onClick={(event) => handleClick(n)}
+                    <TableCell
+                      className="p-4 md:p-16"
+                      component="th"
+                      scope="row"
+                      onClick={(event) => handleClick(n)}
                     >
                       {n.state}
                     </TableCell>
 
-                    <TableCell className="p-4 md:p-16 truncate" component="th" scope="row"  align="right" 
+                    <TableCell
+                      className="p-4 md:p-16"
+                      component="th"
+                      scope="row"
+                      align="right"
                       onClick={(event) => handleClick(n)}
-                      >
-                      {n.BillDetails}
-                    </TableCell>
-
-                    <TableCell className="p-4 md:p-16" component="th" scope="row" align="right"   onClick={(event) => handleClick(n)}>
-                   
+                    >
                       {n.verificationStatus}
                     </TableCell>
 
-                    <TableCell className="p-4 md:p-16" component="th" scope="row" align="right"   onClick={(event) => handleClick(n)}>
-                      {n.status}
+                    <TableCell
+                      className="p-4 md:p-16"
+                      component="th"
+                      scope="row"
+                      align="right"
+                      onClick={(event) => handleClick(n)}
+                    >
+                      {n.videoCount}
                     </TableCell>
 
-        
-
-                    <TableCell className="p-4 md:p-16" component="th" scope="row" align="right"   onClick={(event) => handleClick(n)}>
+                    <TableCell
+                      className="p-4 md:p-16"
+                      component="th"
+                      scope="row"
+                      align="right"
+                      onClick={(event) => handleClick(n)}
+                    >
                       {n.loginDate}
                     </TableCell>
                   </TableRow>
@@ -280,24 +183,75 @@ function DevicesTable(props) {
         </Table>
       </FuseScrollbars>
 
-      <TablePagination
-        className="shrink-0 border-t-1"
-        component="div"
-        count={props.total}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[10]}
-        page={page}
-        backIconButtonProps={{
-          'aria-label': 'Previous Page',
-        }}
-        nextIconButtonProps={{
-          'aria-label': 'Next Page',
-        }}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      <Box
+  display="flex"
+  justifyContent="space-between"
+  alignItems="center"
+  flexWrap="wrap"
+  sx={{
+    gap: 1,
+    "@media (min-width: 600px)": {
+      justifyContent: "space-between", 
+    },
+    "@media (max-width: 599px)": {
+      justifyContent: "center", 
+    },
+  }}
+>
+  <Box
+    sx={{
+      flexGrow: 1,
+      display: "flex",
+      justifyContent: {
+        xs: "center", 
+        sm: "flex-start", 
+      },
+      flexBasis: {
+        xs: "100%", 
+        sm: "auto", 
+      },
+    }}
+  >
+    <Pagination
+      count={Math.ceil(props.total / rowsPerPage)}
+      page={page + 1}
+      onChange={(event, value) => handleChangePage(event, value - 1)}
+    />
+  </Box>
+  <Box
+    sx={{
+      flexGrow: 1,
+      display: "flex",
+      justifyContent: {
+        xs: "center", 
+        sm: "flex-end", 
+      },
+      flexBasis: {
+        xs: "100%", 
+        sm: "auto", 
+      },
+    }}
+  >
+   <TablePagination
+      component="div"
+      count={props.total}
+      page={page}
+  onPageChange={handleChangePage}
+      rowsPerPage={rowsPerPage}
+      onRowsPerPageChange={handleChangeRowsPerPage}
+      labelDisplayedRows={() => null} 
+      sx={{
+        '& .MuiTablePagination-actions': {
+          display: 'none',
+        },
+      }}
+    />
+  </Box>
+</Box>
+
+
     </div>
   );
 }
 
-export default withRouter(DevicesTable);
+export default withRouter(SessionsTable);

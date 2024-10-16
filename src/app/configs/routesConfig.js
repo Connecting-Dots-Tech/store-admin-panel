@@ -24,14 +24,14 @@ const routes = [
     path: 'loading',
     element: <FuseLoading />,
   },
-  {
-    path: '404',
-    element: <Error404Page />,
-  },
-  {
-    path: '*',
-    element: <Navigate to="404" />,
-  },
+  // {
+  //   path: '404',
+  //   element: <Error404Page />,
+  // },
+  // {
+  //   path: '*',
+  //   element: <Navigate to="404" />,
+  // },
 ];
 
 export default routes;
