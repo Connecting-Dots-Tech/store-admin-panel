@@ -20,16 +20,18 @@ import SimpleSnackbar from '../../../components/Snackbar'
 import ShopsTableHead from './AdsTableHead';
 import FadeMenu from '../../../components/FadeMenu'
 import AddStoreAds from './AddStoreAds';
-import { Box, Chip, Grid, Typography } from '@mui/material';
+import { Box, Button, Chip, Divider, Grid, Tooltip, Typography } from '@mui/material';
 import { Container, TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { useAuth } from '../../../../auth/AuthContext';
+
 
 function AdsTable(props) {
   // const dispatch = useDispatch();
   // const products = useSelector(selectShops);
   // const searchText = useSelector(selectShopsSearchText);
-
+  const { isStoreAdmin  } = useAuth();
   const [selected, setSelected] = useState([]);
   let storeId=props.storeId
   const [data, setData] = useState([]);
@@ -151,13 +153,50 @@ const handleCloseImageDialog = () => {
     });
   }
 
-  function handleSelectAllClick(event) {
+ 
+  const handleSelectAllClick = (event) => {
+
     if (event.target.checked) {
-      setSelected(data.map((n) => n.id));
+      const newSelecteds = data.map((ad) => ad._id);
+      setSelected(newSelecteds);
       return;
     }
     setSelected([]);
-  }
+  };
+
+
+  const handleSelectClick = (id) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+    }
+
+    setSelected(newSelected);
+  };
+
+
+   // Handle deleting all selected ads
+   const handleDeleteSelected = () => {
+    axios
+      .post(process.env.REACT_APP_PRODUCTION_KEY + '/ads/delete-ads', {  ids: selected })
+      .then((res) => {
+        toast.success('Ads deleted successfully');
+        setSelected([]);
+        props.getAds(undefined, undefined, true);
+      })
+      .catch((err) => {
+        toast.error('Error deleting ads');
+        console.log(err);
+      });
+  };
 
   function handleDeselect() {
     setSelected([]);
@@ -270,6 +309,13 @@ const handleCloseImageDialog = () => {
       {dialog}
 
 
+      {selected.length > 0 && (
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1, mr: 2 }}>
+        <Button variant="contained" color="error" onClick={handleDeleteSelected}>
+          Delete Selected Ads
+        </Button>
+      </Box>
+      )}
 
 
      
@@ -318,6 +364,13 @@ const handleCloseImageDialog = () => {
                   
                   >
                 
+                <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={isSelected}
+                        onChange={() => handleSelectClick(n._id)}
+                        color="primary"
+                      />
+                    </TableCell>
 
                     <TableCell
                     pl={2}
@@ -362,11 +415,19 @@ const handleCloseImageDialog = () => {
                       )}
                     </TableCell>
 
-                    <TableCell className="p-4 md:p-16" component="th" scope="row"
-                    onClick={(event) => handleClick(n)}
-                    >
-                      {n.title}
-                    </TableCell>
+                    <TableCell
+  className="p-4 md:p-16"
+  component="th"
+  scope="row"
+  onClick={(event) => handleClick(n)}
+>
+
+  <Tooltip title={n.title} arrow>
+    <span>
+      {n.title.length > 20 ? `${n.title.substring(0, 20)}...` : n.title}
+    </span>
+  </Tooltip>
+</TableCell>
 
                     <TableCell className="p-4 md:p-16 truncate" component="th" scope="row"
                       onClick={(event) => handleClick(n)}
@@ -374,35 +435,51 @@ const handleCloseImageDialog = () => {
                       {n.adType}
                     </TableCell>
 
-                    <TableCell className="p-4 md:p-16 truncate" component="th" scope="row" align='left'
-                      onClick={(event) => handleClick(n)}
-                      >
-                    
-{
-  n.regionId && n.regionId.length > 0 &&
-  (
-  n.regionId.map((res,index)=>(
-    res ? ( 
-      <Chip
-        key={index}
-        label={res}
-        style={{ margin: '0.5rem' }}
-      />
-    ) : null
-                         ))
-                        )
-}
-                     
-                      </TableCell>
+                    <TableCell className="p-4 md:p-16 truncate" component="th" scope="row" align="left">
+  {n.regionId && n.regionId.length > 0 && (
+    <>
+      {/* Tooltip to show all regions on hover */}
+      <Tooltip
+        title={n.regionId.join(', ')} // Join all regions with a comma
+        arrow
+      >
+        <div style={{ display: 'inline-block' }}>
+          {/* Display the first 3 regions */}
+          {n.regionId.slice(0, 3).map((res, index) => (
+            res ? (
+              <Chip
+                key={index}
+                label={res}
+                style={{ margin: '0.5rem' }}
+              />
+            ) : null
+          ))}
 
-                  
-                      <TableCell className="p-4 md:p-16" component="th" scope="row" align="left">
-                    {n.status}
-                    </TableCell>
+         
+          {n.regionId.length > 3 && (
+            <Chip
+              label={`+${n.regionId.length - 3} more`} 
+              style={{ margin: '0.5rem' }}
+            />
+          )}
+        </div>
+      </Tooltip>
+    </>
+  )}
+</TableCell>
 
+                
+                    {/* {
+                   isStoreAdmin? */}
                     <TableCell className="p-4 md:p-16" component="th" scope="row" align="right">
-                    <FadeMenu delete={(e)=>{handleDelete(e,n._id)}} update={(e)=>{handleAdd(e,true,'EDIT',n)}} />
-                    </TableCell>
+                   <FadeMenu
+  delete={(e) => handleDelete(e, n._id)}
+  update={isStoreAdmin ? (e) => handleAdd(e, true, 'EDIT', n) : undefined}
+/>
+
+                  </TableCell>
+                  {/* } */}
+                    
                   </TableRow>
                 );
               })}
@@ -459,24 +536,7 @@ const handleCloseImageDialog = () => {
       <DialogContent>
         {selectedData && (
           <Box>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                mb: 2, // Margin bottom
-              }}
-            >
-              <img
-                src={selectedData.imageUrl}
-                alt="Full-size"
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  borderRadius: '8px', // Rounded corners
-                }}
-              />
-            </Box>
-
+           
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" gutterBottom>
@@ -527,6 +587,74 @@ const handleCloseImageDialog = () => {
                 <Typography variant="body1">{selectedData.description}</Typography>
               </Grid>
             </Grid>
+
+            <Box
+  sx={{
+    display: 'flex',
+    flexDirection: 'column', // Stack images vertically
+    alignItems: 'center', // Center align images
+    mb: 2, // Margin bottom for spacing
+  }}
+>
+  {selectedData.imageUrl && (
+    <>
+      <Typography variant="h6" gutterBottom>
+        Grid Image
+      </Typography>
+      <img
+        src={selectedData.imageUrl}
+        alt="Full-size"
+        style={{
+          width: '100%',
+          height: 'auto',
+          borderRadius: '8px', // Rounded corners
+          marginBottom: '10px', // Space between images
+        }}
+      />
+    </>
+  )}
+ <Divider style={{ background: 'black' }} variant="middle" />
+  {selectedData.carouselUrl && (
+    <>
+      <Typography variant="h6" gutterBottom>
+        Carousel Image
+      </Typography>
+      <img
+        src={selectedData.carouselUrl}
+        alt="Carousel"
+        style={{
+          width: '100%',
+          height: 'auto',
+          borderRadius: '8px', // Rounded corners
+          marginBottom: '10px', // Space between images
+        }}
+      />
+    </>
+  )}
+   <Divider style={{ background: 'black' }} variant="middle" />
+  {selectedData.popupUrl && (
+    <>
+      <Typography variant="h6" gutterBottom>
+        Popup Image
+      </Typography>
+      <img
+        src={selectedData.popupUrl}
+        alt="Popup"
+        style={{
+          width: '100%',
+          height: 'auto',
+          borderRadius: '8px', // Rounded corners
+          marginBottom: '10px', // Space between images
+        }}
+      />
+    </>
+  )}
+  {(!selectedData.imageUrl && !selectedData.carouselUrl && !selectedData.popupUrl) && (
+    <Typography>No images available</Typography> // Fallback if none are available
+  )}
+</Box>
+
+
           </Box>
         )}
       </DialogContent>

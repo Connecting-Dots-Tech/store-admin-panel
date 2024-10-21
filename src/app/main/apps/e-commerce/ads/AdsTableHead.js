@@ -19,7 +19,15 @@ import { removeProducts } from '../store/productsSlice';
 
 const rows = [
 
-  // address,hpn,cut,dist,state
+
+ 
+  {
+    id: 'image',
+    align: 'center',
+    disablePadding: false,
+    label: 'Image',
+    sort: true,
+  },
   {
     id: 'name',
     align: 'left',
@@ -36,21 +44,14 @@ const rows = [
   },
   {
     id: 'RegionID',
-    align: 'left',
+    align: 'center',
     disablePadding: false,
     label: 'RegionID',
     sort: true,
   },
   {
-    id: 'Status',
-    align: 'left',
-    disablePadding: false,
-    label: 'Status',
-    sort: true,
-  },
-  {
     id: 'active',
-    align: 'right',
+    align: 'center',
     disablePadding: false,
     label: 'Actions',
     sort: true,

@@ -52,7 +52,7 @@ class JwtService extends FuseUtils.EventEmitter {
   signInWithEmailAndPassword = (email, password) => {
     return new Promise((resolve, reject) => {
       
-    let role = "storeAdmin"
+    let role = "store"
     axios.post(process.env.REACT_APP_PRODUCTION_KEY+'/admin/login',{email,password,role}).then((res)=>{
       let datas= res.data.payload
       console.log(datas)

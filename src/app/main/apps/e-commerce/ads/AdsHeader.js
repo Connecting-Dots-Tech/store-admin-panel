@@ -14,10 +14,12 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import { toast } from 'react-toastify';
-// import { useUserRole } from '../../../../context/userContext';
+import { useAuth } from '../../../../auth/AuthContext';
 
 function AdsHeader(props) {
 //  const { userRole } = useUserRole();
+const { isStoreAdmin  } = useAuth();
+
 const [dialog, setDialog] = useState("");
 const [open,setOpen] = useState(false);
 const [adType, setAdType] = useState("all");
@@ -157,22 +159,24 @@ const handleClose =() => {
             Go Back
           </Button>
         </motion.div>
-
+{
+  isStoreAdmin  &&
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
         >
           <Button
             className=""
             size="small" 
-          onClick={handleAdd}
+            onClick={handleAdd}
             variant="contained"
             color="secondary"
             startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}
-          >
+            >
             ADD Ads
           </Button>
         </motion.div>
+          }
 
 
 

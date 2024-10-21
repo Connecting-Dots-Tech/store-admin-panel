@@ -10,6 +10,7 @@ const AuthContext = React.createContext();
 
 function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(undefined);
+  const [isStoreAdmin, setIsStoreAdmin] = useState(false);
   const [waitAuthCheck, setWaitAuthCheck] = useState(true);
   const dispatch = useDispatch();
 
@@ -59,11 +60,12 @@ function AuthProvider({ children }) {
       if (message) {
         dispatch(showMessage({ message }));
       }
-
+      const isStoreAdminFlag = user.role === 'storeAdmin' || user.role === 'storeManager';
       Promise.all([
         dispatch(setUser(user)),
         // You can receive data in here before app initialization
       ]).then((values) => {
+        setIsStoreAdmin(isStoreAdminFlag);
         setWaitAuthCheck(false);
         setIsAuthenticated(true);
       });
@@ -82,7 +84,7 @@ function AuthProvider({ children }) {
   return waitAuthCheck ? (
     <FuseSplashScreen />
   ) : (
-    <AuthContext.Provider value={{ isAuthenticated }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ isAuthenticated, isStoreAdmin  }}>{children}</AuthContext.Provider>
   );
 }
 
