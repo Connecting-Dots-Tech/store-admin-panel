@@ -59,11 +59,11 @@ const rows = [
 ];
 
 function AdsTableHead(props) {
-  const { selectedProductIds } = props;
+  const { selectedProductIds,rowCount,onSelectAllClick } = props;
   const numSelected = selectedProductIds.length;
 
   const [selectedProductsMenu, setSelectedProductsMenu] = useState(null);
-
+  const isAllSelected = selectedProductIds.length === rowCount;
   const dispatch = useDispatch();
 
   const createSortHandler = (property) => (event) => {
@@ -92,6 +92,14 @@ function AdsTableHead(props) {
           className="w-40 md:w-64 text-center z-99"
         >
           
+          <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={isAllSelected}
+                       onChange={onSelectAllClick}
+                        color="primary"
+                      />
+                    </TableCell>
+                    
           {numSelected > 0 && (
             <Box
               className="flex items-center justify-center absolute w-64 top-0 ltr:left-0 rtl:right-0 mx-56 h-64 z-10 border-b-1"

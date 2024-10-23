@@ -17,7 +17,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import SimpleSnackbar from '../../../components/Snackbar'
-import ShopsTableHead from './AdsTableHead';
+import AdsTableHead from './AdsTableHead';
 import FadeMenu from '../../../components/FadeMenu'
 import AddStoreAds from './AddStoreAds';
 import { Box, Button, Chip, Divider, Grid, Tooltip, Typography } from '@mui/material';
@@ -322,7 +322,7 @@ const handleCloseImageDialog = () => {
       <FuseScrollbars className="grow overflow-x-auto">
         <Table stickyHeader className="min-w-xl" aria-labelledby="tableTitle">
 
-          <ShopsTableHead
+          <AdsTableHead
             selectedProductIds={selected}
             order={order}
             onSelectAllClick={handleSelectAllClick}
@@ -585,8 +585,36 @@ const handleCloseImageDialog = () => {
                   Description:
                 </Typography>
                 <Typography variant="body1">{selectedData.description}</Typography>
+                </Grid>
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom>
+                  Regions:
+                </Typography>
+                {selectedData.regionId && selectedData.regionId.length > 0 && (
+    <>
+      {/* Tooltip to show all regions on hover */}
+      <Tooltip
+        title={selectedData.regionId.join(', ')} // Join all regions with a comma
+        arrow
+      >
+        <div style={{ display: 'inline-block' }}>
+          {/* Display the first 3 regions */}
+          {selectedData.regionId.map((res, index) => (
+            res ? (
+              <Chip
+                key={index}
+                label={res}
+                style={{ margin: '0.5rem' }}
+              />
+            ) : null
+          ))}
+
+        </div>
+      </Tooltip>
+    </>
+  )}
               </Grid>
-            </Grid>
+            </Grid>                                                
 
             <Box
   sx={{

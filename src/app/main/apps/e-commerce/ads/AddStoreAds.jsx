@@ -16,7 +16,7 @@ import Slide from '@mui/material/Slide';
 import Chip from '@mui/material/Chip';
 import FileUpload from 'react-material-file-upload';
 import LinearProgress from '@mui/material/LinearProgress'; 
-
+import Autocomplete from '@mui/lab/Autocomplete'; 
 import AWS from 'aws-sdk';
 import { useParams } from 'react-router-dom';
 import { FormControl, InputLabel, OutlinedInput, Select } from '@mui/material';
@@ -87,12 +87,14 @@ const [selectedRegions, setSelectedRegions] = useState([]);
   });
 
   const [selectedLayout, setSelectedLayout] = useState(null);
-  const [layouts, setLayouts] = useState([]); // State to store the list of layouts
-  const [regionIds, setRegionIds] = useState([]); // State to store the list of region IDs
+  const [layouts, setLayouts] = useState([]);
+  const [regionIds, setRegionIds] = useState([]);
 
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
-
+  const [productSuggestions, setProductSuggestions] = useState([]); 
+  const [selectedProducts, setSelectedProducts] = useState([]); 
+  const [selectedProductIds, setSelectedProductIds] = useState([]); 
 
   const formatDateTimeLocal = (date) => {
     console.log(date)
@@ -249,7 +251,7 @@ const handleFileChange = async (e, title) => {
 
     if (isValid) {
       console.log('Form Submitted', adDetails);
-      const adData = { ...adDetails, storeId, tags, imageUrl: image,layoutId:selectedLayout,regionId:selectedRegions, carouselUrl: carousel, popupUrl: popup};
+      const adData = { ...adDetails, storeId, tags, imageUrl: image,layoutId:selectedLayout,regionId:selectedRegions, carouselUrl: carousel, popupUrl: popup,productIds:selectedProductIds};
       props.submit(adData);
       handleClose();
     }else{
@@ -339,6 +341,41 @@ const handleFileChange = async (e, title) => {
       }
     }
   }, [props.updated, props.data]);
+
+
+  const fetchProductSuggestions = async (query) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_PRODUCTION_KEY}/products/search-products-admin/${storeId}/${query}`);
+      console.log(response.data.data.products)
+      setProductSuggestions(response.data.data.products); // Assuming response contains product list
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast.error("Error fetching products");
+    }
+  };
+  const handleProductSearch = (event, value) => {
+    if (value) {
+      fetchProductSuggestions(value);
+    }
+  };
+  const handleProductSelection = (event, newValue) => {
+    console.log(newValue)
+    const uniqueProducts = newValue.filter(
+      (product) => !selectedProducts.some((selected) => selected._id === product._id)
+    );
+    
+    setSelectedProducts((prevSelected) => [
+      ...prevSelected,
+      ...uniqueProducts,
+    ]);
+    setSelectedProductIds((prevIds) => [
+      ...prevIds,
+      ...uniqueProducts.map(product => product._id),
+    ]);
+    console.log(selectedProductIds)
+  };
+
+
 
   return (
     <div>
@@ -647,6 +684,21 @@ const handleFileChange = async (e, title) => {
               helperText={!fieldValidity.description && 'Description is required'}
             />
 
+
+<Autocomplete
+            multiple
+            options={productSuggestions} // The list of products to choose from
+            getOptionLabel={(option) => option.productName } // Assuming products have a 'name' field
+            onInputChange={handleProductSearch} // Called when the user types in the search box
+            onChange={handleProductSelection} // Called when products are selected
+            value={selectedProducts} // The currently selected products
+            renderInput={(params) => <TextField {...params} label="Products" placeholder="Search products" />}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
+                <Chip key={option._id} label={option.productName } {...getTagProps({ index })} />
+              ))
+            }
+          />
             {/* <FileUpload
               value={logo ? [logo] : []}
               onChange={handleFileChange}

@@ -15,12 +15,14 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../../../auth/AuthContext';
-
+import AddMultipleStoreAds from './AddMultipleStoreAds';
 function AdsHeader(props) {
 //  const { userRole } = useUserRole();
 const { isStoreAdmin  } = useAuth();
 
 const [dialog, setDialog] = useState("");
+const [multiDialog, setMultiDialog] = useState("");
+const [multiAdOpen,setMultiAdOpen] = useState(false);
 const [open,setOpen] = useState(false);
 const [adType, setAdType] = useState("all");
 const [removeDialog, setRemoveDialog] = useState("");
@@ -38,6 +40,49 @@ const handleAdTypeChange = (event) => {
   setAdType(event.target.value);
 };
 
+const handleMultiAdClose =() => {
+  setMultiDialog()
+  setMultiAdOpen(false)
+}
+
+const handleMultiAdd = (e, upd = Boolean(false), button = 'ADD', data = {}) => {
+   
+  setMultiAdOpen(true);
+  const add = (dataArray) => {
+    setMultiDialog();
+  
+    if (!upd) {
+      handleMultiAdClose();
+  
+      Promise.all(
+        dataArray.map((data) =>
+          axios.post(process.env.REACT_APP_PRODUCTION_KEY + '/ads', data)
+        )
+      )
+        .then((responses) => {
+          toast.success("All ads uploaded successfully");
+          props.getAds(undefined, undefined, true);
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error(err.response?.data?.message || "Error uploading ads");
+        });
+    }
+  };
+  
+  setMultiDialog(() => (
+       
+    <AddMultipleStoreAds
+      onClose={handleMultiAdClose}
+      open={true}
+       submit={add}
+       updated={upd}
+       button={button}
+       data={data}
+    />
+   
+  ));
+};
 
 const handleClose =() => {
   setDialog()
@@ -97,6 +142,7 @@ const handleClose =() => {
   return (
     <div className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
 
+{multiDialog}
       {dialog}
       <Typography
         component={motion.span}
@@ -159,6 +205,25 @@ const handleClose =() => {
             Go Back
           </Button>
         </motion.div>
+
+        {
+  isStoreAdmin  &&
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
+        >      
+          <Button
+            className=""
+            size="small" 
+          onClick={handleMultiAdd}
+            variant="contained"
+            color="secondary"
+            startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}
+          >
+            ADD Multiple
+          </Button>
+        </motion.div>
+          }
 {
   isStoreAdmin  &&
         <motion.div
