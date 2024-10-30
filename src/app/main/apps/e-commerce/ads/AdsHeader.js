@@ -15,6 +15,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../../../auth/AuthContext';
+import { initialCategories } from './adCategory';
 import AddMultipleStoreAds from './AddMultipleStoreAds';
 function AdsHeader(props) {
 //  const { userRole } = useUserRole();
@@ -24,7 +25,8 @@ const [dialog, setDialog] = useState("");
 const [multiDialog, setMultiDialog] = useState("");
 const [multiAdOpen,setMultiAdOpen] = useState(false);
 const [open,setOpen] = useState(false);
-const [adType, setAdType] = useState("all");
+const [adType, setAdType] = useState("");
+const [category, setCategory] = useState('');
 const [removeDialog, setRemoveDialog] = useState("");
 const [removeOpen,setRemoveOpen] = useState(false);
 const navigate = useNavigate();  
@@ -38,7 +40,15 @@ const handleRemoveClose = () => {
 
 const handleAdTypeChange = (event) => {
   setAdType(event.target.value);
+  setCategory(''); 
 };
+
+const handleCategoryChange = (event) => {
+  setCategory(event.target.value);
+  setAdType(''); 
+};
+
+
 
 const handleMultiAdClose =() => {
   setMultiDialog()
@@ -131,13 +141,19 @@ const handleClose =() => {
 
   const handleRemoveAllAds = async () => {
     try {
-      await axios.delete(`${process.env.REACT_APP_PRODUCTION_KEY}/ads/delete-all-ads/${props.storeId}/${adType}`);
+      await axios.delete(
+        `${process.env.REACT_APP_PRODUCTION_KEY}/ads/delete-all-ads/${props.storeId}`,
+        { params: { adType, category } }
+      );
+      toast.success("ads deleted")
       props.getAds(undefined, undefined, true);
       handleRemoveClose(); // Close the dialog after successful removal
     } catch (error) {
       console.error(error);
+      toast.error("Error Occured during delete")
     }
   };
+
 
   return (
     <div className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
@@ -246,26 +262,34 @@ const handleClose =() => {
 
 
 
-        <Dialog open={removeOpen} onClose={handleRemoveClose}>
+<Dialog open={removeOpen} onClose={handleRemoveClose}>
           <DialogTitle>Confirm Removal</DialogTitle>
           <DialogContent>
             <Typography gutterBottom>
-              Are you sure you want to remove all ads? Please select an ad type:
+              Are you sure you want to remove all ads?
             </Typography>
-            <RadioGroup value={adType} onChange={handleAdTypeChange}>
-              <FormControlLabel value="grid" control={<Radio />} label="Grid" />
-              <FormControlLabel value="popup" control={<Radio />} label="Popup" />
-              <FormControlLabel value="carousel" control={<Radio />} label="Carousel" />
-              <FormControlLabel value="all" control={<Radio />} label="All" />
-            </RadioGroup>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleRemoveClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleRemoveAllAds} color="secondary">
-              Remove All
-            </Button>
+            <Typography gutterBottom>Please select an ad type:</Typography>
+        <RadioGroup value={adType} onChange={handleAdTypeChange}>
+          <FormControlLabel value="grid" control={<Radio />} label="Grid" />
+          <FormControlLabel value="popup" control={<Radio />} label="Popup" />
+          <FormControlLabel value="carousel" control={<Radio />} label="Carousel" />
+          <FormControlLabel value="all" control={<Radio />} label="All" />
+        </RadioGroup>
+
+        <Typography gutterBottom>Please select an ad category:</Typography>
+        <RadioGroup value={category} onChange={handleCategoryChange}>
+          {initialCategories.map((category) => (
+            <FormControlLabel key={category} value={category} control={<Radio />} label={category} />
+          ))}
+        </RadioGroup>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleRemoveClose} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={handleRemoveAllAds} color="secondary">
+          Remove All
+        </Button>
           </DialogActions>
         </Dialog>
       </div>

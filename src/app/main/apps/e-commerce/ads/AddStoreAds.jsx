@@ -21,6 +21,7 @@ import AWS from 'aws-sdk';
 import { useParams } from 'react-router-dom';
 import { FormControl, InputLabel, OutlinedInput, Select } from '@mui/material';
 import { Box } from '@mui/system';
+import { initialCategories } from './adCategory';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -66,7 +67,7 @@ const [selectedRegions, setSelectedRegions] = useState([]);
     validFrom: '',
     validTo: '',
     terms: 'terms and conditions',
-    category: 'general',
+    category: 'Vegetables',
     type: 'single',
     description: 'general description',
   });
@@ -319,7 +320,7 @@ const handleFileChange = async (e, title) => {
       //   ? formatDateTimeLocal(new Date(props.data.validTo)) 
       //   : nextMonth.toISOString().split('T')[0] + 'T00:00',
         terms: props.data.terms || 'terms and conditions',
-        category: props.data.category || 'general',
+        category: props.data.category || '',
         type: props.data.type || '',
         description: props.data.description || 'general description',
       }));
@@ -641,17 +642,28 @@ const handleFileChange = async (e, title) => {
               helperText={!fieldValidity.terms && 'Terms are required'}
             />
 
-            <TextField
+          
+<TextField
+              select
               fullWidth
-              type="text"
-              label="Category"
+              label="Select Category"
               variant="outlined"
               name="category"
               value={adDetails.category}
               onChange={handleChange}
+              required
               error={!fieldValidity.category}
-              helperText={!fieldValidity.category && 'Category is required'}
-            />
+              helperText={!fieldValidity.category && 'Ad Category is required'}
+            >
+              {
+                initialCategories.map((cateogry)=>(
+                  <MenuItem value={cateogry}>{cateogry}</MenuItem>
+                ))
+              }
+              {/* <MenuItem value="carousel">Carousel</MenuItem>
+              <MenuItem value="grid">Grid</MenuItem>
+              <MenuItem value="popup">Popup</MenuItem> */}
+            </TextField>
 
 
 

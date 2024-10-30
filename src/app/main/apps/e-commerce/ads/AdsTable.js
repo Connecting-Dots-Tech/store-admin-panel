@@ -96,7 +96,7 @@ const handleCloseImageDialog = () => {
               setPage(0)
             setRowsPerPage(10);
                setMaxPage(0);
-              props.getAds(undefined, undefined, true)
+               props.getAds(page+1, rowsPerPage);
              
             }).catch((err)=>{
               console.log(err);
@@ -190,7 +190,7 @@ const handleCloseImageDialog = () => {
       .then((res) => {
         toast.success('Ads deleted successfully');
         setSelected([]);
-        props.getAds(undefined, undefined, true);
+        props.getAds(page+1, rowsPerPage);
       })
       .catch((err) => {
         toast.error('Error deleting ads');
@@ -209,10 +209,10 @@ const handleCloseImageDialog = () => {
 
   function handleChangePage(event, value) {
     const newPage = parseInt(value, 10)
-    if(page<newPage && newPage > maxPage) {
+    // if(page<newPage && newPage > maxPage) {
       setMaxPage(newPage)
       props.getAds(newPage+1,rowsPerPage)
-    }
+    // }
     setPage(value);
   }
 
@@ -227,7 +227,7 @@ const handleCloseImageDialog = () => {
    
     axios.delete(process.env.REACT_APP_PRODUCTION_KEY+'/ads/'+id).then((res)=>{
    
-      props.getAds(undefined, undefined, true)
+      props.getAds(page+1, rowsPerPage);
       toast.success("Ad deleted")
     }).catch((err)=>{
       toast.error(err.response.data.message)
@@ -348,7 +348,7 @@ const handleCloseImageDialog = () => {
               ],
               [order.direction]
             )
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((n) => {
                 const isSelected = selected.indexOf(n._id) !== -1;
                 return (

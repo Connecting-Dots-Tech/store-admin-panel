@@ -31,16 +31,13 @@ console.log(storeId)
       const datas = await response.data.data;
 
       setTotalCount(datas.totalData);
-      if(flag==true){
         setData(datas.ads)
-      }else{
         setData([...data, ...datas.ads])
-      }
       
     }catch(err){
       console.log(err)
     }finally {
-      setIsLoading(false); // Update loading state when fetching is completed
+      setIsLoading(false); 
     }
   }
 
