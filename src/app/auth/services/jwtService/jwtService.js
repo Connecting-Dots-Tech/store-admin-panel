@@ -75,8 +75,8 @@ class JwtService extends FuseUtils.EventEmitter {
             photoURL:"https://www.pngarts.com/files/6/User-Avatar-in-Suit-PNG.png"
            },
            from:"db",
-            role:"admin",
-            uuid:"1234556"
+            role:datas.role,
+            uuid:datas._id
           },
           access_token:datas.access_token
         };
